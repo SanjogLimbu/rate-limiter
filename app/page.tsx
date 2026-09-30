@@ -23,6 +23,8 @@ type Metrics = {
   max: number
 }
 
+//
+
 function percentile(sorted: number[], p: number): number {
   const idx = Math.ceil((p / 100) * sorted.length) - 1
 
@@ -103,9 +105,7 @@ export default function Home() {
         </h1>
 
         <p className="text-zinc-400 text-sm mt-2">
-          Compare the most popular rate limiting algorithms under concurrent load. 
-          <br />
-          Pick an endpoint and set a request count to see results.
+          Compare different rate limiting algorithms under different types of attacks. 
         </p>
       </header>
 
@@ -118,7 +118,7 @@ export default function Home() {
           {endpoints.map(ep => (
             <label
               key={ep.path}
-              className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-zinc-900/60 first:rounded-t-lg last:rounded-b-lg"
+              className="flex items-center gap-3 px-4 py-3 cursor-pointer bg-zinc-900 hover:bg-zinc-900/60 first:rounded-t-lg last:rounded-b-lg"
             >
               <input
                 type="radio"
@@ -180,8 +180,8 @@ export default function Home() {
             </span>
           </div>
 
-          <div className="border border-zinc-800 rounded-lg p-5">
-            <div className="flex h-1.5 rounded-full overflow-hidden bg-zinc-800 mb-5">
+          <div className="border border-zinc-800 rounded-lg p-5 bg-zinc-900">
+            <div className="flex h-1.5 rounded-full overflow-hidden mb-5">
               <div
                 className="bg-emerald-500"
                 style={{ width: `${100 - floodResults.blockRate}%` }}

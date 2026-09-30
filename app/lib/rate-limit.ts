@@ -34,6 +34,8 @@ export async function fixedWindow({
         end
 
 
+        current = tonumber(current)
+
         if (current >= maxRequests) then 
             return 0 
         end
@@ -271,13 +273,13 @@ export async function rateLimiter({
     window: number,
     maxRequests: number
 }) {
-    const userIP = ip.split(",")[0].trim()
-    const key = `rateLimiter:${endpoint}:${strategy}:${userIP}`
-
     if (!(strategy in strategies)) {
         strategy = "token-bucket"
     }
 
+
+    const userIP = ip.split(",")[0].trim()
+    const key = `rateLimiter:${endpoint}:${strategy}:${userIP}`
 
     const strategyName = strategy as keyof typeof strategies
     let allowed = false
