@@ -1,5 +1,5 @@
 async function spam() {
-  const url = "http://localhost:3000/api/get-resource";
+  const url = "http://localhost:3000/api/fixed-window";
 
   const promises = [];
 
