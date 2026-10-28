@@ -223,7 +223,7 @@ export async function leakyBucket({
         local leakedRequests = elapsedSeconds * leakRate
         local newRequests = math.max(0, record.requests - leakedRequests) 
 
-        if (newRequests >= maxRequests) then 
+        if (newRequests + 1 > maxRequests) then 
             return 0
         end
 
@@ -265,15 +265,17 @@ export async function rateLimiter({
     endpoint,
     strategy = "token-bucket",
     window = 60,
-    maxRequests = 5
+    maxRequests = 5,
+    failStrategy = "open"
 }: {
     ip: string,
     endpoint: string, 
     strategy: string,
     window: number,
-    maxRequests: number
+    maxRequests: number,
+    failStrategy?: "open" | "close"
 }) {
-    if (!(strategy in strategies)) {
+    if (!Object.hasOwn(strategies, strategy)) {
         strategy = "token-bucket"
     }
 
@@ -287,7 +289,8 @@ export async function rateLimiter({
     allowed = await strategies[strategyName]({
         key: key,
         window: window,
-        maxRequests: maxRequests
+        maxRequests: maxRequests,
+        failStrategy: failStrategy
     })
  
 

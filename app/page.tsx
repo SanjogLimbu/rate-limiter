@@ -39,9 +39,11 @@ function ms(n: number): string {
 
 export default function Home() {
   const [doingFlood, setDoingFlood] = useState(false)
-  const [floodResults, setFloodResults] = useState<Metrics | null>(null)
+  const [floodResults, setFloodResults] = useState<(Metrics & { endpoint: string }) | null>(null)
   const [testCount, setTestCount] = useState(50)
   const [selectedEndpoint, setSelectedEndpoint] = useState(endpoints[0].path)
+
+  const validTestCount = Number.isInteger(testCount) && testCount > 0
 
   function calcMetrics(results: { response: Response; duration: number }[], totalTime: number): Metrics {
     const timeTaken = Math.round(totalTime / 10) / 100
@@ -83,16 +85,19 @@ export default function Home() {
       }
     }
 
-    await Promise.all(Array.from({ length: Math.min(6, testCount) }, worker))
+    try {
+      await Promise.all(Array.from({ length: Math.min(6, testCount) }, worker))
 
-    setFloodResults(calcMetrics(results, performance.now() - startTime))
-    setDoingFlood(false)
+      setFloodResults({ ...calcMetrics(results, performance.now() - startTime), endpoint: selectedEndpoint })
+    }
+    finally {
+      setDoingFlood(false)
+    }
   }
 
 
   function enterTestCount(event: React.ChangeEvent<HTMLInputElement>) {
-    const number = Number(event.target.value)
-    if (number) setTestCount(number)
+    setTestCount(Number(event.target.value))
   }
 
 
@@ -161,7 +166,7 @@ export default function Home() {
         </div>
         <button
           onClick={floodAttack}
-          disabled={doingFlood}
+          disabled={doingFlood || !validTestCount}
           className="bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-default cursor-pointer rounded-md px-4 py-1.5 text-sm font-medium transition-colors"
         >
           {doingFlood ? "Running…" : "Run test"}
@@ -176,7 +181,7 @@ export default function Home() {
             </h2>
 
             <span className="font-mono text-xs text-zinc-500">
-              {selectedEndpoint}
+              {floodResults.endpoint}
             </span>
           </div>
 
